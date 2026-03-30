@@ -1,0 +1,16 @@
+{
+  "name": "viralpost-studio",
+  "version": "1.0.0",
+  "description": "Gerador de posts virais com IA",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
