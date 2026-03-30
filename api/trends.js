@@ -1,17 +1,10 @@
-// api/trends.js
-// Busca tendências do nicho usando Claude + web search
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { nicho, redeSocial = 'instagram' } = req.body;
   if (!nicho) return res.status(400).json({ error: 'nicho obrigatório' });
 
-  const redesMap = {
-    instagram: 'Instagram e Reels',
-    linkedin: 'LinkedIn',
-    twitter: 'Twitter/X'
-  };
+  const redesMap = { instagram: 'Instagram e Reels', linkedin: 'LinkedIn', twitter: 'Twitter/X' };
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -23,24 +16,28 @@ export default async function handler(req, res) {
         'anthropic-beta': 'web-search-2025-03-05',
       },
       body: JSON.stringify({
-       model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        tool_choice: { type: 'auto' },
+        system: 'Você é um especialista em marketing digital e conteúdo viral para redes sociais brasileiras. Você SEMPRE usa a ferramenta web_search para buscar tendências atuais antes de responder. Nunca responda sem pesquisar primeiro.',
         messages: [{
           role: 'user',
-          content: `Pesquise as 5 tendências mais virais e em alta agora no nicho de "${nicho}" para ${redesMap[redeSocial] || 'redes sociais'}. 
-          
-Busque notícias recentes, polêmicas, debates, dicas e conteúdos que estão gerando muito engajamento.
+          content: `Use a ferramenta web_search para pesquisar AGORA: "tendências ${nicho} ${new Date().getFullYear()} viral ${redesMap[redeSocial]}"
 
-Responda APENAS com JSON válido, sem markdown:
+Depois pesquise também: "${nicho} polêmica notícia recente brasil"
+
+Com base nos resultados reais encontrados, liste as 5 melhores oportunidades de conteúdo viral para o nicho de "${nicho}" no ${redesMap[redeSocial]}.
+
+Responda APENAS com este JSON, sem markdown, sem explicação:
 {
   "trends": [
     {
-      "titulo": "Tema curto e direto",
-      "descricao": "Por que está em alta agora — 1-2 frases",
-      "angulo": "Ângulo de conteúdo sugerido para post viral",
-      "potencial": "alto|medio",
-      "tipo": "polêmica|dica|novidade|tendência|opinião"
+      "titulo": "Tema específico e atual encontrado na pesquisa",
+      "descricao": "Por que está gerando engajamento agora — baseado no que você encontrou",
+      "angulo": "Ângulo criativo e específico para transformar isso em post viral",
+      "potencial": "alto",
+      "tipo": "novidade"
     }
   ]
 }`
@@ -50,6 +47,11 @@ Responda APENAS com JSON válido, sem markdown:
 
     const data = await response.json();
 
+    if (data.error) {
+      console.error('Anthropic error:', data.error);
+      return res.status(500).json({ error: data.error.message });
+    }
+
     let jsonText = '';
     for (const block of data.content || []) {
       if (block.type === 'text') jsonText = block.text;
@@ -58,18 +60,16 @@ Responda APENAS com JSON válido, sem markdown:
     let trends;
     try {
       const clean = jsonText.replace(/```json|```/g, '').trim();
-      trends = JSON.parse(clean);
+      const start = clean.indexOf('{');
+      const end = clean.lastIndexOf('}');
+      trends = JSON.parse(clean.slice(start, end + 1));
     } catch {
-      trends = {
-        trends: [
-          { titulo: 'Tendência do nicho', descricao: 'Assunto em alta no momento', angulo: 'Compartilhe sua opinião sobre isso', potencial: 'alto', tipo: 'tendência' }
-        ]
-      };
+      return res.status(500).json({ error: 'Falha ao parsear trends: ' + jsonText.slice(0, 200) });
     }
 
     return res.status(200).json(trends);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: 'Erro ao buscar tendências' });
+    return res.status(500).json({ error: err.message });
   }
 }
