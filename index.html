@@ -724,12 +724,6 @@ sb.auth.onAuthStateChange(async (event, session) => {
     document.getElementById('user-name').textContent = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || '';
 
     // Busca perfil do escritor
-    try {
-      const res = await fetch('/api/writer-profile', { headers: { 'Authorization': 'Bearer ' + session.access_token } });
-      const data = await res.json();
-      writerProfile = data.profile;
-    } catch {}
-
     let profileOk = false;
 try {
   const res = await fetch('/api/writer-profile', {
