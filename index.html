@@ -566,7 +566,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null, currentSession = null, currentPost = null, currentTrend = null;
 let writerProfile = null, plannerDate = new Date(), plannerItems = [];
 let avatarDataUrl = null;
-
+let appInitialized = false;
 // ─── QUIZ STATE ────────────────────────────────────
 const TOTAL_STEPS = 6;
 let quizStep = 1;
@@ -718,9 +718,11 @@ function prefillNicho() {
 // ─── AUTH ─────────────────────────────────────────
 sb.auth.onAuthStateChange(async (event, session) => {
   if (event === 'TOKEN_REFRESHED') return;
+  if (appInitialized && event === 'SIGNED_IN') return;
   currentSession = session;
   currentUser = session?.user || null;
   if (currentUser) {
+    appInitialized = true;
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('user-name').textContent = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || '';
 
