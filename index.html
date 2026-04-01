@@ -717,6 +717,7 @@ function prefillNicho() {
 
 // ─── AUTH ─────────────────────────────────────────
 sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'TOKEN_REFRESHED') return;
   currentSession = session;
   currentUser = session?.user || null;
   if (currentUser) {
