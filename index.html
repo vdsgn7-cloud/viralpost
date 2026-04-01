@@ -730,17 +730,28 @@ sb.auth.onAuthStateChange(async (event, session) => {
       writerProfile = data.profile;
     } catch {}
 
-    if (!writerProfile || !writerProfile.onboarding_completo) {
-      // Mostra onboarding
-      document.getElementById('onboarding-screen').style.display = 'block';
-      initQuizProgress();
-    } else {
-      document.getElementById('app').style.display = 'block';
-      updateProfileBanner();
-      prefillNicho();
-      renderPlanner();
-      loadHistory();
-    }
+    let profileOk = false;
+try {
+  const res = await fetch('/api/writer-profile', {
+    headers: { 'Authorization': 'Bearer ' + session.access_token }
+  });
+  if (res.ok) {
+    const data = await res.json();
+    writerProfile = data.profile;
+    profileOk = writerProfile?.onboarding_completo === true;
+  }
+} catch {}
+
+if (!profileOk) {
+  document.getElementById('onboarding-screen').style.display = 'block';
+  initQuizProgress();
+} else {
+  document.getElementById('app').style.display = 'block';
+  updateProfileBanner();
+  prefillNicho();
+  renderPlanner();
+  loadHistory();
+}
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('onboarding-screen').style.display = 'none';
