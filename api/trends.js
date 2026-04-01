@@ -17,8 +17,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 2048,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        max_tokens: 800,
+       tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2 }],
         tool_choice: { type: 'auto' },
         system: 'Você é um especialista em marketing digital e conteúdo viral para redes sociais brasileiras. Você SEMPRE usa a ferramenta web_search para buscar tendências atuais antes de responder. Nunca responda sem pesquisar primeiro.',
         messages: [{
