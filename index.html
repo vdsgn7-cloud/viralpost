@@ -566,7 +566,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null, currentSession = null, currentPost = null, currentTrend = null;
 let writerProfile = null, plannerDate = new Date(), plannerItems = [];
 let avatarDataUrl = null;
-let appInitialized = false;
+let appInitialized = sessionStorage.getItem('appInit') === '1';
 // ─── QUIZ STATE ────────────────────────────────────
 const TOTAL_STEPS = 6;
 let quizStep = 1;
@@ -722,7 +722,8 @@ sb.auth.onAuthStateChange(async (event, session) => {
   currentSession = session;
   currentUser = session?.user || null;
   if (currentUser) {
-    appInitialized = true;
+    appInitialized = true;appInitialized = true;
+    sessionStorage.setItem('appInit', '1');
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('user-name').textContent = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || '';
 
@@ -779,7 +780,10 @@ async function doSignup() {
   if (error) { msg.className = 'msg error'; msg.textContent = error.message; }
   else { msg.className = 'msg success'; msg.textContent = 'Conta criada! Verifique seu email.'; }
 }
-async function doLogout() { await sb.auth.signOut(); }
+async function doLogout() { 
+  sessionStorage.removeItem('appInit');
+  await sb.auth.signOut(); 
+}
 
 function showPage(page, event) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
