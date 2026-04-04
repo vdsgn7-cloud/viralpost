@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-geist: 'Geist', 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: #080808;
+  color: #f2f2f2;
+  font-family: var(--font-geist);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Animated grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+body::after {
+  content: '';
+  position: fixed; top: -20%; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(255,255,255,.03) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
+/* Panel shine top border */
+.panel-shine::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  pointer-events: none;
+}
+
+/* Stream cursor blink */
+.stream-cursor {
+  display: inline-block; width: 1.5px; height: 12px;
+  background: rgba(255,255,255,.5);
+  animation: blink .7s step-end infinite;
+  margin-left: 1px; vertical-align: middle;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Tour spotlight */
+.tour-spotlight {
+  position: absolute; border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.75);
+  z-index: 1; pointer-events: none;
+  transition: all .3s ease;
+}
+
+/* Drag over calendar day */
+.drag-over {
+  border-color: rgba(74,222,128,.3) !important;
+  background: rgba(74,222,128,.04) !important;
+}
+
+@layer utilities {
+  .text-text { color: #f2f2f2; }
+  .text-text2 { color: #737373; }
+  .text-text3 { color: #404040; }
+  .bg-bg { background: #080808; }
+  .bg-bg2 { background: #111111; }
+  .bg-bg3 { background: #161616; }
+  .border-border { border-color: rgba(255,255,255,.07); }
+  .border-border2 { border-color: rgba(255,255,255,.12); }
+  .border-border3 { border-color: rgba(255,255,255,.2); }
+}
