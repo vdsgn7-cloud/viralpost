@@ -459,6 +459,20 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <!-- CUSTOMIZAÇÃO VISUAL -->
           <div class="custom-panel hidden" id="custom-panel">
             <div class="custom-panel-title">🎨 Personalizar visual</div>
+            <div class="custom-grid" style="margin-bottom:12px">
+  <div class="custom-field custom-field-full">
+    <label>Proporção / Tamanho</label>
+    <select id="c-proporcao" onchange="liveUpdate()">
+      <option value="1080x1350">1080 × 1350 — Feed vertical (4:5)</option>
+      <option value="1080x1080">1080 × 1080 — Quadrado (1:1)</option>
+    </select>
+  </div>
+</div>
+<div id="slide-nav" class="hidden" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px">
+  <button onclick="prevSlide()" id="btn-prev-slide" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">‹</button>
+  <span id="slide-counter" style="font-size:13px;color:var(--text2)">1 / 6</span>
+  <button onclick="nextSlide()" id="btn-next-slide" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">›</button>
+</div>
             <div class="custom-grid">
               <div class="custom-field custom-field-full">
                 <label>Foto de perfil</label>
@@ -566,6 +580,8 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null, currentSession = null, currentPost = null, currentTrend = null;
 let writerProfile = null, plannerDate = new Date(), plannerItems = [];
 let avatarDataUrl = null;
+  let currentSlide = 0;
+let currentSlides = [];
 let appInitialized = sessionStorage.getItem('appInit') === '1';
 // ─── QUIZ STATE ────────────────────────────────────
 const TOTAL_STEPS = 6;
