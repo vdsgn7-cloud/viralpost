@@ -618,21 +618,30 @@ sb.auth.onAuthStateChange(async (event, session) => {
     sessionStorage.setItem('appInit', '1');
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('user-name').textContent = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || '';
-    let profileOk = false;
-    try {
-      const res = await fetch('/api/writer-profile', { headers: { 'Authorization': 'Bearer ' + session.access_token } });
-      if (res.ok) { const data = await res.json(); writerProfile = data.profile; profileOk = writerProfile?.onboarding_completo === true; }
-    } catch {}
-    if (!profileOk) {
-      document.getElementById('onboarding-screen').style.display = 'block';
-      initQuizProgress();
-    } else {
-      document.getElementById('app').style.display = 'block';
-      updateProfileBanner();
-      prefillNicho();
-      renderPlanner();
-      loadHistory();
-    }
+  try {
+  const res = await fetch('/api/writer-profile', {
+    headers: { 'Authorization': 'Bearer ' + session.access_token }
+  });
+  if (res.ok) {
+    const data = await res.json();
+    writerProfile = data.profile;
+    localStorage.setItem('quiz_done_' + currentUser.id, '1');
+  }
+} catch {}
+
+const jaRespondeuQuiz = writerProfile?.onboarding_completo === true
+  || localStorage.getItem('quiz_done_' + currentUser.id) === '1';
+
+if (!jaRespondeuQuiz) {
+  document.getElementById('onboarding-screen').style.display = 'block';
+  initQuizProgress();
+} else {
+  document.getElementById('app').style.display = 'block';
+  updateProfileBanner();
+  prefillNicho();
+  renderPlanner();
+  loadHistory();
+}
   } else {
     sessionStorage.removeItem('appInit');
     appInitialized = false;
